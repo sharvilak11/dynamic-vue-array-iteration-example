@@ -12,74 +12,51 @@ export default {
     },
     methods: {
         setupPost(h) {
-            return h(
-                'div', {
-                    class: 'post',
-                },
-                [
-                    h('div', {
-                        class: 'd-flex align-items-center',
+            return h('div', { class: 'post' }, [
+                h('div', { class: 'd-flex align-items-center' }, [
+                    h(Avatar, {
+                        props: {
+                            size: '40',
+                            text: this.post.Author,
+                        },
+                        class: 'mr-3',
+                    }), h('h4', this.post.Title)]
+                ),
+                h('div', { class: 'd-flex align-items-center post-summary pb-2 mb-2'}, [
+                    h('i', { class: 'material-icons mr-1' }, 'thumb_up_alt'),
+                    this.post.Likes,
+                    h('i', { class: 'material-icons ml-2 mr-1' }, 'comment'),
+                    this.post.Comments ? this.post.Comments.length : 0]
+                ),
+                this.post.Comments ? h('a', {
+                    on: {
+                        click: () => {
+                            this.viewComments(this.post);
+                        }
                     },
-                    [
-                        h(Avatar, {
-                            props: {
-                                size: '40',
-                                text: this.post.Author,
-                            },
-                            class: 'mr-3',
-                        }),
-                        h('h4', this.post.Title),
-                    ]),
-                    h('div', {
-                        class: 'd-flex align-items-center post-summary pb-2 mb-2',
+                    class: {
+                        'mt-2': !this.post.Comments[0].expanded,
+                        'd-none': this.post.Comments[0].expanded,
                     },
-                    [
-                        h('i', {
-                            class: 'material-icons mr-1',
-                        },
-                        'thumb_up_alt'
-                        ),
-                        this.post.Likes,
-                        h('i', {
-                            class: 'material-icons ml-2 mr-1',
-                        },
-                        'comment'
-                        ),
-                        this.post.Comments ? this.post.Comments.length : 0,
-                    ]),
-                    this.post.Comments ? h('a', {
-                        on: {
-                            click: () => {
-                                this.viewComments(this.post);
-                            },
-                        },
-                        class: {
-                            'mt-2': !this.post.Comments[0].expanded,
-                            'd-none': this.post.Comments[0].expanded,
-                        },
-                    },
-                    'View Comments:') : null,
-                    this.setupComment(h, this.post, 0),
-                ]
-            );
+                }, 'View Comments:') : null,
+                this.setupComments(h, this.post, 0),
+            ]);
         },
-        setupComment(h, parent, counter) {
+        setupComments(h, parent, counter) {
             if (parent.Comments) {
-                return h(
-                    'div',
-                    parent.Comments.map((c, key) => {
-                        return [
-                            h(Comment, {
-                                key,
-                                props: {
-                                    comment: c,
-                                    counter,
-                                    viewComments: this.viewComments,
-                                },
-                            }),
-                            this.setupComment(h, c, counter + 1),
-                        ];
-                    })
+                return h('div', parent.Comments.map((c, key) => {
+                    return [
+                        h(Comment, {
+                            key,
+                            props: {
+                                comment: c,
+                                counter,
+                                viewComments: this.viewComments,
+                            },
+                        }),
+                        this.setupComments(h, c, counter + 1),
+                    ];
+                })
                 );
             } else {
                 return null;

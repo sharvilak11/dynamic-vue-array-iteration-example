@@ -33,7 +33,7 @@ export default {
     computed: {
         style() {
             return {
-                display: !this.expanded ? 'none' : 'block',
+                display: !this.comment.expanded ? 'none' : 'block',
                 'padding-left': (this.counter + 1) * 16 + 'px',
             };
         },
